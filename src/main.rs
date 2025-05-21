@@ -1,11 +1,16 @@
+mod game_context;
 mod helpers;
 mod sprites;
 
-use helpers::prelude::*;
-use helpers::theme;
+use game_context::GameContext;
+use helpers::{screen, shapes::draw_circle_smooth, theme};
 use log::info;
-use macroquad::prelude::*;
-use sprites::ball::Ball;
+use macroquad::{
+  color::WHITE,
+  shapes::{draw_line, draw_rectangle},
+  time::draw_fps,
+  window::{Conf, clear_background, next_frame},
+};
 
 #[cfg(windows)]
 fn enable_dpi_awareness() {
@@ -33,18 +38,25 @@ async fn main() {
   env_logger::init();
   info!("Starting game...");
 
-  let mut ball = Ball::new();
+  let mut game = GameContext::new();
 
   loop {
     clear_background(theme::GREEN_900);
 
-    ball.update();
+    game.update();
 
     draw_rectangle(0.0, 0.0, screen::cx(), screen::height(), theme::GREEN_500);
     draw_circle_smooth(screen::cx(), screen::cy(), 150.0, theme::GREEN_100);
-    draw_line(screen::cx(), 0.0, screen::cx(), screen::height(), 2.0, WHITE);
+    draw_line(
+      screen::cx(),
+      0.0,
+      screen::cx(),
+      screen::height(),
+      2.0,
+      WHITE,
+    );
 
-    ball.draw();
+    game.draw();
 
     if cfg!(debug_assertions) {
       draw_fps();

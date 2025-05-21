@@ -1,7 +1,7 @@
-use crate::helpers::prelude::*;
-use macroquad::{color::WHITE, time::get_frame_time};
+use crate::helpers::{screen, shapes::draw_circle_smooth};
+use macroquad::{color::WHITE, math::Circle, time::get_frame_time};
 
-enum Direction {
+pub enum Direction {
   Down,
   Left,
   Right,
@@ -16,8 +16,8 @@ pub struct Ball {
 }
 
 impl Ball {
-  const RADIUS: f32 = 20.0;
-  const SPEED: f32 = 350.0;
+  pub const RADIUS: f32 = 20.0;
+  const SPEED: f32 = 375.0;
 
   pub fn new() -> Self {
     Ball {
@@ -26,6 +26,14 @@ impl Ball {
       vx: Self::SPEED,
       vy: Self::SPEED,
     }
+  }
+
+  pub fn y(&self) -> f32 {
+    self.y
+  }
+
+  pub fn circle(&self) -> Circle {
+    Circle::new(self.x, self.y, Ball::RADIUS)
   }
 
   pub fn update(&mut self) {
@@ -55,7 +63,7 @@ impl Ball {
     draw_circle_smooth(self.x, self.y, Self::RADIUS, WHITE);
   }
 
-  fn bounce(&mut self, direction: Direction) {
+  pub fn bounce(&mut self, direction: Direction) {
     match direction {
       Direction::Down => self.vy = Self::SPEED,
       Direction::Left => self.vx = -Self::SPEED,
