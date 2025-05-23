@@ -3,6 +3,7 @@ use macroquad::{
   color::WHITE,
   input::{KeyCode, is_key_down},
   math::Rect,
+  text::draw_text,
   time::get_frame_time,
 };
 
@@ -13,15 +14,18 @@ pub enum Role {
 
 pub struct Player {
   role: Role,
+  score: u8,
   x: f32,
   y: f32,
 }
 
 impl Player {
-  pub const HEIGHT: f32 = 120.0;
+  const HEIGHT: f32 = 120.0;
   const OFFSET: f32 = 10.0;
   const SPEED: f32 = 275.0;
   const WIDTH: f32 = 25.0;
+  const SCORE_SIZE: f32 = 150.0;
+  const SCORE_OFFSET: f32 = 120.0;
 
   pub fn new(role: Role) -> Self {
     let y = screen::cy() - (Self::HEIGHT / 2.0);
@@ -30,11 +34,20 @@ impl Player {
       Role::Human => Self::OFFSET,
     };
 
-    Self { role, x, y }
+    Self {
+      role,
+      score: 0,
+      x,
+      y,
+    }
   }
 
-  pub fn y(&self) -> f32 {
-    self.y
+  pub fn cy(&self) -> f32 {
+    self.y + (Self::HEIGHT / 2.0)
+  }
+
+  pub fn add_point(&mut self) {
+    self.score += 1;
   }
 
   pub fn rect(&self) -> Rect {
@@ -57,7 +70,19 @@ impl Player {
   }
 
   pub fn draw(&self) {
+    let score_pos = match self.role {
+      Role::AI => screen::cx() + (screen::cx() / 2.0),
+      Role::Human => screen::cx() / 2.0,
+    };
+
     draw_rectangle_rounded(self.x, self.y, Self::WIDTH, Self::HEIGHT, 8.0, WHITE);
+    draw_text(
+      &self.score.to_string(),
+      score_pos,
+      Self::SCORE_OFFSET,
+      Self::SCORE_SIZE,
+      WHITE,
+    );
   }
 
   pub fn move_down(&mut self) {

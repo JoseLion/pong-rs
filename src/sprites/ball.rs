@@ -1,5 +1,5 @@
 use crate::helpers::{screen, shapes::draw_circle_smooth};
-use macroquad::{color::WHITE, math::Circle, time::get_frame_time};
+use macroquad::{color::WHITE, math::Circle, prelude::rand, time::get_frame_time};
 
 pub enum Direction {
   Down,
@@ -23,9 +23,13 @@ impl Ball {
     Ball {
       x: screen::cx(),
       y: screen::cy(),
-      vx: Self::SPEED,
-      vy: Self::SPEED,
+      vx: Self::random_speed(),
+      vy: Self::random_speed(),
     }
+  }
+
+  pub fn x(&self) -> f32 {
+    self.x
   }
 
   pub fn y(&self) -> f32 {
@@ -41,14 +45,6 @@ impl Ball {
 
     self.x += self.vx * frame_time;
     self.y += self.vy * frame_time;
-
-    if self.x + Self::RADIUS >= screen::width() {
-      self.bounce(Direction::Left);
-    }
-
-    if self.x - Self::RADIUS < 0.0 {
-      self.bounce(Direction::Right);
-    }
 
     if self.y + Self::RADIUS >= screen::height() {
       self.bounce(Direction::Up)
@@ -69,6 +65,13 @@ impl Ball {
       Direction::Left => self.vx = -Self::SPEED,
       Direction::Right => self.vx = Self::SPEED,
       Direction::Up => self.vy = -Self::SPEED,
+    }
+  }
+
+  fn random_speed() -> f32 {
+    match rand::gen_range(0, 10) % 2 == 0 {
+      true => Self::SPEED,
+      false => -Self::SPEED,
     }
   }
 }
