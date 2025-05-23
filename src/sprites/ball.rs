@@ -1,6 +1,7 @@
 use crate::helpers::{screen, shapes::draw_circle_smooth};
 use macroquad::{color::WHITE, math::Circle, prelude::rand, time::get_frame_time};
 
+#[derive(Clone, Copy)]
 pub enum Direction {
   Down,
   Left,
@@ -47,7 +48,7 @@ impl Ball {
     self.y += self.vy * frame_time;
 
     if self.y + Self::RADIUS >= screen::height() {
-      self.bounce(Direction::Up)
+      self.bounce(Direction::Up);
     }
 
     if self.y - Self::RADIUS < 0.0 {
