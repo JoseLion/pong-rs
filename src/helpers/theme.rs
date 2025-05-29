@@ -1,5 +1,20 @@
-use macroquad::{color::Color, color_u8};
+use ggez::graphics::Color;
 
-pub const GREEN_100: Color = color_u8!(129, 204, 184, 255);
-pub const GREEN_500: Color = color_u8!(38, 185, 154, 255);
-pub const GREEN_900: Color = color_u8!(20, 160, 133, 255);
+pub const GREEN_100: Color = Color {
+  r: 129.0 / 255.0,
+  g: 204.0 / 255.0,
+  b: 184.0 / 255.0,
+  a: 1.0,
+};
+pub const GREEN_500: Color = Color {
+  r: 38.0 / 255.0,
+  g: 185.0 / 255.0,
+  b: 154.0 / 255.0,
+  a: 1.0,
+};
+pub const GREEN_900: Color = Color {
+  r: 20.0 / 255.0,
+  g: 160.0 / 255.0,
+  b: 133.0 / 255.0,
+  a: 1.0,
+};

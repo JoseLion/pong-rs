@@ -1,5 +1,10 @@
-use crate::helpers::{screen, shapes::draw_circle_smooth};
-use macroquad::{color::WHITE, math::Circle, prelude::rand, time::get_frame_time};
+use crate::helpers::{screen, shapes::Circle};
+use ggez::{
+  Context, GameResult,
+  glam::Vec2,
+  graphics::{Canvas, Color, DrawMode, Mesh},
+};
+use rand::Rng;
 
 #[derive(Clone, Copy)]
 pub enum Direction {
@@ -10,6 +15,7 @@ pub enum Direction {
 }
 
 pub struct Ball {
+  mesh: Mesh,
   x: f32,
   y: f32,
   vx: f32,
@@ -20,13 +26,23 @@ impl Ball {
   pub const RADIUS: f32 = 20.0;
   const SPEED: f32 = 375.0;
 
-  pub fn new() -> Self {
-    Ball {
+  pub fn new(ctx: &Context) -> GameResult<Self> {
+    let mesh = Mesh::new_circle(
+      ctx,
+      DrawMode::fill(),
+      Vec2::ZERO,
+      Self::RADIUS,
+      0.1,
+      Color::WHITE,
+    )?;
+
+    Ok(Ball {
+      mesh,
       x: screen::cx(),
       y: screen::cy(),
       vx: Self::random_speed(),
       vy: Self::random_speed(),
-    }
+    })
   }
 
   pub fn x(&self) -> f32 {
@@ -38,14 +54,25 @@ impl Ball {
   }
 
   pub fn circle(&self) -> Circle {
-    Circle::new(self.x, self.y, Ball::RADIUS)
+    Circle {
+      x: self.x,
+      y: self.y,
+      r: Ball::RADIUS,
+    }
   }
 
-  pub fn update(&mut self) {
-    let frame_time = get_frame_time();
+  pub fn respawn(&mut self) {
+    self.x = screen::cx();
+    self.y = screen::cy();
+    self.vx = Self::random_speed();
+    self.vy = Self::random_speed();
+  }
 
-    self.x += self.vx * frame_time;
-    self.y += self.vy * frame_time;
+  pub fn update(&mut self, ctx: &mut Context) {
+    let delta = ctx.time.delta().as_secs_f32().clamp(0.0, 1.0 / 30.0);
+
+    self.x += self.vx * delta;
+    self.y += self.vy * delta;
 
     if self.y + Self::RADIUS >= screen::height() {
       self.bounce(Direction::Up);
@@ -56,8 +83,8 @@ impl Ball {
     }
   }
 
-  pub fn draw(&self) {
-    draw_circle_smooth(self.x, self.y, Self::RADIUS, WHITE);
+  pub fn draw(&self, canvas: &mut Canvas) {
+    canvas.draw(&self.mesh, Vec2::new(self.x, self.y));
   }
 
   pub fn bounce(&mut self, direction: Direction) {
@@ -70,7 +97,7 @@ impl Ball {
   }
 
   fn random_speed() -> f32 {
-    match rand::gen_range(0, 10) % 2 == 0 {
+    match rand::rng().random_range(0..10) % 2 == 0 {
       true => Self::SPEED,
       false => -Self::SPEED,
     }
