@@ -1,11 +1,12 @@
-use macroquad::window::{screen_height, screen_width};
+const WIDTH: f32 = 1280.0;
+const HEIGHT: f32 = 800.0;
 
 pub fn width() -> f32 {
-  screen_width()
+  WIDTH
 }
 
 pub fn height() -> f32 {
-  screen_height()
+  HEIGHT
 }
 
 pub fn cx() -> f32 {
